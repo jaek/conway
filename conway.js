@@ -4,8 +4,8 @@ console.log(context);
 
 var width = canvas.width;
 var height = canvas.height;
-let px = 20;
-let py = 20; //The height and width of pixels
+let px = 5;
+let py = 5; //The height and width of pixels
 
 let board_width = width / px;
 let board_height = height / py;
@@ -68,9 +68,8 @@ function loop(board, board_width, board_height) {
     var context = canvas.getContext("2d");
     context.clearRect(0, 0, width, height);
     make_move(board, board_width, board_height);
+    seedRandom(board, board_width, board_height);
     draw_screen(context, board);
-    console.log("test");
-
 }
 
 
@@ -87,10 +86,17 @@ Array.matrix = function (numrows, numcols, initial) {
     return arr;
 }
 var board = Array.matrix(board_width, board_height, 0);
-board[1][2] = 1;
-board[2][2] = 1;
-board[1][1] = 1;
-board[2][1] = 1;
-board[3][1] = 1;
 
-var test = setInterval(loop(board, board_width, board_height), 1000);
+function seedRandom(board, board_width, board_height) {
+    var x = 0;
+    var a, b;
+    while (x < 10) {
+        a = Math.floor((Math.random() * 10) + 1);
+        b = Math.floor((Math.random() * 10) + 1);
+        board[a][b] = 1;
+        board[a + 1][b + 1] = 1;
+        x++;
+    }
+}
+seedRandom(board, board_width, board_height);
+var test = setInterval(loop, 10, board, board_width, board_height);
