@@ -70,7 +70,7 @@ function loop(board, board_width, board_height) {
     make_move(board, board_width, board_height);
     draw_screen(context, board);
     console.log("test");
-    requestAnimationFrame(loop);
+
 }
 
 
@@ -93,10 +93,4 @@ board[1][1] = 1;
 board[2][1] = 1;
 board[3][1] = 1;
 
-var requestAnimationFrame = window.requestAnimationFrame || 
-                            window.mozRequestAnimationFrame || 
-                            window.webkitRequestAnimationFrame || 
-                            window.msRequestAnimationFrame;
-
-loop(board, board_width, board_height, context);
-
+var test = setInterval(loop(board, board_width, board_height), 1000);
