@@ -9,7 +9,6 @@ window.onload = function () {
 
     let board_width = width / px;
     let board_height = height / py;
-    var flag = true;
     
     function draw_screen(ctx, board) {
         var xi = 0;
@@ -31,11 +30,13 @@ window.onload = function () {
         for (x = 0; x < numrows; ++x) {
             for (y = 0; y < numcols; ++y) {
                 var neighbours = get_neighbours(x, y, board, numrows, numcols);
-                if(board[x][y] === 0 && neighbours === 3){
+                if(board[x][y] == 0 && neighbours === 3){
                     board[x][y] = 1;
-                } else if(board[x][y] === 1 && (neighbours < 2 || neighbours > 3)){
+                } else if(board[x][y] == 1 && (neighbours == 2 || neighbours == 3)){
+                    board[x][y] = 1;
+                } else {
                     board[x][y] = 0;
-                } 
+                }
             }
         }
     }
@@ -61,6 +62,13 @@ window.onload = function () {
 
         return neighbours - board[pos_x][pos_y]; //account for self
     }
+     function loop(board, board_width, board_height, context){
+        context.clearRect(0, 0, width, height);
+        make_move(board, board_width, board_height);
+        draw_screen(context, board);
+        console.log("test");
+    } 
+    
     //implementation of multidimensional array from The Good Parts 
     Array.matrix = function (numrows, numcols, initial) {
         var arr = [];
@@ -74,11 +82,13 @@ window.onload = function () {
         return arr;
     }
     var board = Array.matrix(board_width, board_height, 0);
+    board[1][2] = 1;
     board[2][2] = 1;
-    board[2][3] = 1;
-    board[3][2] = 0;
-    board[3][3] = 1;
-    console.log(get_neighbours(3, 3, board, board_width, board_height));
-    make_move(board, board_width, board_height);
-    draw_screen(context, board);
+    board[1][1] = 1;
+    board[2][1] = 1;
+    board[3][1] = 1;
+    
+    return this.setInterval(loop(board, board_width, board_height, context), 50);
+    
 };
+
