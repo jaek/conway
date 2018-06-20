@@ -1,6 +1,7 @@
 var canvas = document.getElementById("viewport");
 var context = canvas.getContext("2d");
 console.log(context);
+canvas.addEventListener("mousedown", get_mouse_position, false);
 
 var width = canvas.width;
 var height = canvas.height;
@@ -10,7 +11,20 @@ let py = 5; //The height and width of pixels
 let board_width = width / px;
 let board_height = height / py;
 
-function draw_screen(ctx, board) {
+function get_mouse_position(){
+    var event = window.event;
+    var canvas = document.getElementById("viewport");
+    var x = event.x;
+    var y = event.y;
+
+    x -= canvas.offsetLeft;
+    y -= canvas.offsetTop;
+
+    alert(x, y);
+    
+}
+
+function draw_screen(ctx, board) { //todo: refactor height-> board_height etc
     var xi = 0;
     var yi = 0;
     for (x = 0; x < width; x += px) {
@@ -30,15 +44,25 @@ function make_move(board, numrows, numcols) {
     for (x = 0; x < numrows; ++x) {
         for (y = 0; y < numcols; ++y) {
             var neighbours = get_neighbours(x, y, board, numrows, numcols);
-            if (board[x][y] == 0 && neighbours === 3) {
-                board[x][y] = 1;
-            } else if (board[x][y] == 1 && (neighbours == 2 || neighbours == 3)) {
-                board[x][y] = 1;
-            } else {
-                board[x][y] = 0;
-            }
+            board[x][y] = s_or_b(board[x][y], neighbours); 
         }
     }
+}
+
+//take a cell and its number of neighbours - return 1:live 0:die
+function s_or_b(cell_state, neighbours){
+    if(cell_state == 0){
+        if(neighbours === 3){
+            cell_state = 1;
+        }
+    } else {
+        if(neighbours > 3 || neighbours < 2){
+            cell_state = 0;
+        } else {
+            cell_state = 1;
+        }
+    }
+    return cell_state;
 }
 
 function get_neighbours(pos_x, pos_y, board, numrows, numcols) {
@@ -67,6 +91,7 @@ function loop(board, board_width, board_height) {
     var canvas = document.getElementById("viewport");
     var context = canvas.getContext("2d");
     context.clearRect(0, 0, width, height);
+    canvas.addEventListener("mousedown", get_mouse_position, false);
     make_move(board, board_width, board_height);
     seedRandom(board, board_width, board_height);
     draw_screen(context, board);
@@ -91,12 +116,12 @@ function seedRandom(board, board_width, board_height) {
     var x = 0;
     var a, b;
     while (x < 10) {
-        a = Math.floor((Math.random() * 10) + 1);
-        b = Math.floor((Math.random() * 10) + 1);
-        board[a][b] = 1;
-        board[a + 1][b + 1] = 1;
+        a = Math.floor((Math.random() * board_height) + 1);
+        b = Math.floor((Math.random() * board_width) + 1);
+        board[a][b] = !board[a][b];
+        board[a + 1][b] = !board[a + 1][b];
+        board[a - 1][b] = !board[a - 1][b];
         x++;
     }
 }
-seedRandom(board, board_width, board_height);
 var test = setInterval(loop, 10, board, board_width, board_height);
